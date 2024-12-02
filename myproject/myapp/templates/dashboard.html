@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Basic CSS for layout */
+        html, body {
+            overflow: hidden; /* Disables scrolling */
+            height: 100%; /* Ensures the page takes up full height */
+        }
+        body{
+            background: #3a6351;
+        }
+        .container { display: flex; flex-direction: column; align-items: center; }
+        .card { display: inline-block; width: 150px; margin: 10px; padding: 20px; border-radius: 8px; color: #fff; text-align: center; }
+        .card.red { background-color: #d9534f; }
+        .card.orange { background-color: #f0ad4e; }
+        .card.blue { background-color: #337ab7; }
+        .table-container { width: 90%; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+ 
+        .container {
+    max-width: 1200px;
+    width: 100%; /* Adjusts to screen width, up to max-width */
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Enables scrolling if content overflows */
+    max-height: calc(100vh - 20px); /* Ensures it fits within viewport with a bit of padding */
+}
+ 
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+ 
+        <div style="margin-bottom: 20px;">
+            <button onclick="window.location.href='http://127.0.0.1:8000/admin/myapp/doctor/add/'" style="padding: 10px 20px; margin-right: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Add Doctor</button>
+            <button onclick="window.location.href='http://127.0.0.1:8000/admin/myapp/patient/add/'" style="padding: 10px 20px; margin-right: 10px; background-color: #2196F3; color: white; border: none; border-radius: 5px;">Add Patient</button>
+            <button onclick="window.location.href='http://127.0.0.1:8000/admin/myapp/appointment/add/'" style="padding: 10px 20px; background-color: #FF5722; color: white; border: none; border-radius: 5px;">Add Appointment</button>
+        </div>
+       
+        <!-- Summary Cards -->
+        <div>
+            <div class="card red">
+                <h3>{{ total_doctors }}</h3>
+                <p>Total Doctors</p>
+            </div>
+            <div class="card orange">
+                <h3>{{ total_patients }}</h3>
+                <p>Total Patients</p>
+            </div>
+            <div class="card blue">
+                <h3>{{ total_appointments }}</h3>
+                <p>Total Appointments</p>
+            </div>
+        </div>
+ 
+        <!-- Recent Doctors Table -->
+        <div class="table-container">
+            <h2>Recent Doctors</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                </tr>
+                {% for doctor in recent_doctors %}
+                <tr>
+                    <td>{{ doctor.name }}</td>
+                    <td>{{ doctor.department }}</td>
+                    <td>{{ doctor.contact }}</td>
+                    <td>{{ doctor.status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+ 
+        <!-- Recent Patients Table -->
+        <div class="table-container">
+            <h2>Recent Patients</h2>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Symptoms</th>
+                    <th>Contact</th>
+                    <th>Address</th>
+                    <th>Status</th>
+                </tr>
+                {% for patient in recent_patients %}
+                <tr>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.symptoms }}</td>
+                    <td>{{ patient.contact }}</td>
+                    <td>{{ patient.address }}</td>
+                    <td>{{ patient.status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+ 
+        <!-- Recent Appointments Table -->
+        <!-- Recent Appointments Table -->
+<div class="table-container">
+    <h2>Recent Appointments</h2>
+    <table>
+        <tr>
+            <th>Patient Name</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+        </tr>
+        {% for appointment in recent_appointments %}
+        <tr>
+            <td>{{ appointment.patient.name }}</td>  <!-- Accessing patient name -->
+            <td>{{ appointment.doctor.name }}</td>   <!-- Accessing doctor name, assuming it's a foreign key -->
+            <td>{{ appointment.appointment_date|date:"Y-m-d" }}</td>  <!-- Formatting the appointment date -->
+            <td>{{ appointment.appointment_date|time:"H:i" }}</td>  <!-- Formatting the appointment time -->
+            <td>{{ appointment.status }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+ 
+    </div>
+</body>
+</html>

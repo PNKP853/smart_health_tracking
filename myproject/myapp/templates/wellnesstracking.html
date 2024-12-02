@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wellness Transactions</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #3a6351; /* Light green gradient */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: calc(100vh - 20px);
+            margin: auto;
+        }
+        
+    
+        .table-container {
+            width: 90%;
+            margin-top: 20px;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff; /* White background for clarity */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for tables */
+        }
+    
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+            color: #3a6351; /* Consistent dark green text */
+        }
+    
+        th {
+            background-color: #eef5f9; /* Light background for table headers */
+            font-weight: bold;
+        }
+    
+        .search-form {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        .search-input {
+            padding: 10px;
+            width: 80%;
+            margin-right: 10px;
+            border-radius: 10px;
+            border: 1px solid #3a6351; /* Dark green border for inputs */
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Input shadow for depth */
+        }
+    
+        .search-button, .add-button {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+    
+        .search-button {
+            background-color: #3a6351; /* Emerald green */
+        }
+    
+        .add-button {
+            background-color: #007bff; /* Consistent blue for add button */
+        }
+    
+        .search-button:hover {
+            background-color: #285943; /* Slightly darker green on hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+    
+        .add-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Wellness Transactions</h1>
+ 
+        <!-- Search Form -->
+        <form class="search-form" method="get" action="{% url 'wellnesstracking' %}">
+            <input type="text" name="search" placeholder="Search by category or description..." value="{{ search_query }}" class="search-input">
+            <button type="submit" class="search-button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Search</button>
+        </form>
+ 
+        <!-- Add Transaction Button (redirects to Django admin) -->
+        <button class="add-button" onclick="window.location.href='/admin/myapp/wellnesstransaction/add/'">Add Transaction</button>
+ 
+        <!-- Transactions Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.amount }}</td>
+                        <td>{{ transaction.category }}</td>
+                        <td>{{ transaction.description }}</td>
+                        <td>{{ transaction.date|date:"Y-m-d" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No transactions found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health AI Suggestions</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Body styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #3a6351;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        /* Textarea input styling */
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #4CAF50;
+        }
+
+        /* Submit button styling */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Response box */
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7e6;
+            border: 1px solid #d3e9d1;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #2d3748;
+        }
+
+        /* Error message */
+        .error {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #721c24;
+        }
+
+        /* Spinner/Loading animation */
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Get AI Health Suggestions</h1>
+        <form id="aiForm" method="POST">
+            {% csrf_token %}
+            <textarea name="user_input" placeholder="Enter your symptoms or health-related question..." required></textarea><br><br>
+            <button type="submit">Get Suggestions</button>
+        </form>
+
+        <!-- Response section -->
+        <div id="suggestions-container">
+            
+            <ul id="aiResponse">
+                <!-- Suggestions will be dynamically inserted here -->
+            </ul>
+        </div>
+
+        <!-- Error message section -->
+        <div class="error" id="errorResponse" style="display:none;"></div>
+
+        <!-- Loading spinner -->
+        <div class="loading" id="loading" style="display:none;">Loading...</div>
+    </div>
+
+    <script>
+        // Handle form submission via AJAX
+        document.getElementById('aiForm').onsubmit = async function(e) {
+            e.preventDefault();
+
+            const userInput = document.querySelector('textarea[name="user_input"]').value;
+
+            // Clear previous error and response
+            document.getElementById('aiResponse').innerHTML = '';
+            document.getElementById('errorResponse').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';  // Show loading spinner
+
+            try {
+                // Sending the user input to the Django view
+                const response = await fetch("{% url 'suggestions' %}", {
+                    method: "POST",
+                    body: new URLSearchParams({
+                        'user_input': userInput
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    }
+                });
+
+                const data = await response.json();
+
+                // Handle the response
+                if (data.suggestions) {
+                    // Create a bullet list from the suggestions
+                    const ul = document.getElementById('aiResponse');
+                    data.suggestions.forEach(suggestion => {
+                        const li = document.createElement('li');
+                        li.textContent = suggestion;
+                        ul.appendChild(li);
+                    });
+                } else if (data.error) {
+                    document.getElementById('errorResponse').style.display = 'block';
+                    document.getElementById('errorResponse').innerHTML = "Error: " + data.error;
+                }
+            } catch (error) {
+                // Handle unexpected errors
+                document.getElementById('errorResponse').style.display = 'block';
+                document.getElementById('errorResponse').innerHTML = "Error: Something went wrong. Please try again later.";
+            } finally {
+                // Hide loading spinner
+                document.getElementById('loading').style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
